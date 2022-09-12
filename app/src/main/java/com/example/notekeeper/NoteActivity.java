@@ -1,36 +1,37 @@
 package com.example.notekeeper;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import com.example.notekeeper.databinding.ActivityNoteBinding;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.view.View;
-
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
-import com.example.notekeeper.databinding.ActivityNoteBinding;
-
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
-    public static final String NOTE_INFO = "com.example.notekeeper.NOTE_INFO";
+    public static final String NOTE_POSITION = "com.example.notekeeper.NOTE_POSITION";
+    public static final int POSITION_NOT_SET = -1;
+    private static final int SHOW_CAMERA = 1;
     private AppBarConfiguration appBarConfiguration;
     private ActivityNoteBinding binding;
     private NoteInfo mNote;
     private boolean mIsNewNote;
+    private Spinner mSpinnerCourses;
+    private EditText mTextNoteTile;
+    private EditText mTextNoteText;
+    private ImageView mImageNoteImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,20 +42,21 @@ public class NoteActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
 
-        Spinner spinnerCourses = findViewById(R.id.spinner_courses);
+        mSpinnerCourses = findViewById(R.id.spinner_courses);
         List<CourseInfo> courses = DataManager.getInstance().getCourses();
         ArrayAdapter<CourseInfo> adapterCourses =
                 new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, courses);
         adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCourses.setAdapter(adapterCourses);
+        mSpinnerCourses.setAdapter(adapterCourses);
 
         readDisplayStateValues();
 
-        EditText textNoteTile = findViewById(R.id.text_note_title);
-        EditText textNoteText = findViewById(R.id.text_note_text);
+        mTextNoteTile = findViewById(R.id.text_note_title);
+        mTextNoteText = findViewById(R.id.text_note_text);
+        mImageNoteImage = findViewById(R.id.image_note_image);
 
-        if(!mIsNewNote)
-            displayNote(spinnerCourses, textNoteTile, textNoteText);
+        if (!mIsNewNote)
+            displayNote(mSpinnerCourses, mTextNoteTile, mTextNoteText);
     }
 
     private void displayNote(Spinner spinnerCourses, EditText textNoteTile, EditText textNoteText) {
@@ -67,8 +69,10 @@ public class NoteActivity extends AppCompatActivity {
 
     private void readDisplayStateValues() {
         Intent intent = getIntent();
-        mNote = intent.getParcelableExtra(NOTE_INFO);
-        mIsNewNote = mNote == null;
+        int position = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET);
+        mIsNewNote = position == POSITION_NOT_SET;
+        if (!mIsNewNote)
+            mNote = DataManager.getInstance().getNotes().get(position);
     }
 
     @Override
@@ -86,11 +90,43 @@ public class NoteActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_send_mail) {
+            sendEmail();
+            return true;
+        }
+
+        if (id == R.id.action_open_camera) {
+            openCamera();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, SHOW_CAMERA);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent result) {
+        super.onActivityResult(requestCode, resultCode, result);
+        if (requestCode == SHOW_CAMERA && resultCode == RESULT_OK) {
+            Bitmap thumbnail = result.getParcelableExtra("data");
+            mImageNoteImage.setImageBitmap(thumbnail);
+        }
+    }
+
+    private void sendEmail() {
+        CourseInfo course = (CourseInfo) mSpinnerCourses.getSelectedItem();
+        String subject = mTextNoteTile.getText().toString();
+        String body = "Checkout what I learned in the Pluralsight course \"" + course.getTitle() +
+                "\"\n" + mTextNoteText.getText().toString();
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("message/rfc2822");
+        intent.putExtra(intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(intent.EXTRA_TEXT, body);
+        startActivity(intent);
     }
 
 }
