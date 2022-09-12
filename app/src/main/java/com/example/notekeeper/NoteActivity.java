@@ -29,9 +29,11 @@ public class NoteActivity extends AppCompatActivity {
     private NoteInfo mNote;
     private boolean mIsNewNote;
     private Spinner mSpinnerCourses;
-    private EditText mTextNoteTile;
+    private EditText mTextNoteTitle;
     private EditText mTextNoteText;
     private ImageView mImageNoteImage;
+    private int mNotePosition;
+    private boolean mIsCancelling;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +53,30 @@ public class NoteActivity extends AppCompatActivity {
 
         readDisplayStateValues();
 
-        mTextNoteTile = findViewById(R.id.text_note_title);
+        mTextNoteTitle = findViewById(R.id.text_note_title);
         mTextNoteText = findViewById(R.id.text_note_text);
         mImageNoteImage = findViewById(R.id.image_note_image);
 
         if (!mIsNewNote)
-            displayNote(mSpinnerCourses, mTextNoteTile, mTextNoteText);
+            displayNote(mSpinnerCourses, mTextNoteTitle, mTextNoteText);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mIsCancelling){
+            if(mIsNewNote) {
+                DataManager.getInstance().removeNote(mNotePosition);
+            }
+        } else{
+            saveNote();
+        }
+    }
+
+    private void saveNote() {
+        mNote.setCourse((CourseInfo) mSpinnerCourses.getSelectedItem());
+        mNote.setTitle(mTextNoteTitle.getText().toString());
+        mNote.setText(mTextNoteText.getText().toString());
     }
 
     private void displayNote(Spinner spinnerCourses, EditText textNoteTile, EditText textNoteText) {
@@ -71,8 +91,18 @@ public class NoteActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int position = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET);
         mIsNewNote = position == POSITION_NOT_SET;
-        if (!mIsNewNote)
+        if (mIsNewNote){
+            createNewNote();
+        }
+        else{
             mNote = DataManager.getInstance().getNotes().get(position);
+        }
+    }
+
+    private void createNewNote() {
+        DataManager dm = DataManager.getInstance();
+        mNotePosition = dm.createNewNote();
+        mNote = dm.getNotes().get(mNotePosition);
     }
 
     @Override
@@ -93,10 +123,12 @@ public class NoteActivity extends AppCompatActivity {
         if (id == R.id.action_send_mail) {
             sendEmail();
             return true;
-        }
-
-        if (id == R.id.action_open_camera) {
+        } else if (id == R.id.action_open_camera) {
             openCamera();
+            return true;
+        } else if (id == R.id.action_cancel) {
+            mIsCancelling = true;
+            finish();
             return true;
         }
 
@@ -119,7 +151,7 @@ public class NoteActivity extends AppCompatActivity {
 
     private void sendEmail() {
         CourseInfo course = (CourseInfo) mSpinnerCourses.getSelectedItem();
-        String subject = mTextNoteTile.getText().toString();
+        String subject = mTextNoteTitle.getText().toString();
         String body = "Checkout what I learned in the Pluralsight course \"" + course.getTitle() +
                 "\"\n" + mTextNoteText.getText().toString();
         Intent intent = new Intent(Intent.ACTION_SEND);
