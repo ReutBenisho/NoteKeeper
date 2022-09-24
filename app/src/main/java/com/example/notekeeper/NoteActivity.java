@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.ui.AppBarConfiguration;
 
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -23,6 +24,7 @@ import android.widget.Spinner;
 import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
+    private final String TAG = getClass().getSimpleName();
     public static final String NOTE_POSITION = "com.example.notekeeper.NOTE_POSITION";
     public static final int POSITION_NOT_SET = -1;
     private static final int SHOW_CAMERA = 1;
@@ -48,6 +50,7 @@ public class NoteActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "Entered onCreate");
         super.onCreate(savedInstanceState);
 
         binding = ActivityNoteBinding.inflate(getLayoutInflater());
@@ -81,6 +84,8 @@ public class NoteActivity extends AppCompatActivity {
 
         if (!mIsNewNote)
             displayNote(mSpinnerCourses, mTextNoteTitle, mTextNoteText);
+
+        Log.d(TAG, "Exited onCreate");
     }
 
     private void saveOriginalNoteValues() {
@@ -94,8 +99,10 @@ public class NoteActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        Log.d(TAG, "Entered onPause");
         super.onPause();
         if(mIsCancelling){
+            Log.i(TAG, "Canceling not at position: " + mNotePosition);
             if(mIsNewNote) {
                 DataManager.getInstance().removeNote(mNotePosition);
             } else {
@@ -104,6 +111,7 @@ public class NoteActivity extends AppCompatActivity {
         } else{
             saveNote();
         }
+        Log.d(TAG, "Exited onPause");
     }
 
     private void storePreviousNoteValues() {
@@ -129,20 +137,18 @@ public class NoteActivity extends AppCompatActivity {
 
     private void readDisplayStateValues() {
         Intent intent = getIntent();
-        int position = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET);
-        mIsNewNote = position == POSITION_NOT_SET;
+        mNotePosition = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET);
+        mIsNewNote = mNotePosition == POSITION_NOT_SET;
         if (mIsNewNote){
             createNewNote();
         }
-        else{
-            mNote = DataManager.getInstance().getNotes().get(position);
-        }
+        Log.i(TAG, "mNotePosition = " + mNotePosition);
+        mNote = DataManager.getInstance().getNotes().get(mNotePosition);
     }
 
     private void createNewNote() {
         DataManager dm = DataManager.getInstance();
         mNotePosition = dm.createNewNote();
-        mNote = dm.getNotes().get(mNotePosition);
     }
 
     @Override
