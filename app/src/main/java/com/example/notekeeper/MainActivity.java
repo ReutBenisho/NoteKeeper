@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
-    private NoteRecyclerAdapter mNoteRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +45,13 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_notes, R.id.nav_gallery, R.id.nav_slideshow)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        initializeDisplayContent();
 
     }
 
@@ -70,20 +68,4 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mNoteRecyclerAdapter.notifyDataSetChanged();
-    }
-
-    private void initializeDisplayContent() {
-        final RecyclerView recyclerNotes = findViewById(R.id.list_items);
-        final LinearLayoutManager notesLayoutManager = new LinearLayoutManager(this);
-        recyclerNotes.setLayoutManager(notesLayoutManager);
-
-        List<NoteInfo> notes = DataManager.getInstance().getNotes();
-        mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, notes);
-        recyclerNotes.setAdapter(mNoteRecyclerAdapter);
-    }
-
 }
