@@ -6,12 +6,19 @@
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/activity_main.xml" value="0.1796875" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/activity_note.xml" value="0.1" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/activity_note_list.xml" value="0.165625" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/app_bar_main.xml" value="0.1" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/content_main.xml" value="0.14666666666666667" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/content_note.xml" value="0.22" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/content_note_list.xml" value="0.1796875" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/fragment_first.xml" value="0.14666666666666667" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/fragment_home.xml" value="0.1" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/fragment_item_list.xml" value="0.1" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/fragment_note_list.xml" value="0.1" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/fragment_second.xml" value="0.1796875" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/fragment_slideshow.xml" value="0.1" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/item_course_list.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/item_note_list.xml" value="0.22" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/menu/activity_main_drawer.xml" value="0.1796875" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/menu/menu_main.xml" value="0.3333333333333333" />
       </map>
     </option>
