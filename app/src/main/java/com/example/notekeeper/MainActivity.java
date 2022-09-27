@@ -54,9 +54,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().findItem(R.id.nav_notes).setChecked(true);
+        selectNavigationMenuItem(navigationView.getMenu().findItem(R.id.nav_notes));
+    }
 
-
+    private void selectNavigationMenuItem(MenuItem item) {
+        item.setChecked(true);
     }
 
     @Override
@@ -117,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //ft.commit();
 
         // Highlight the selected item has been done by NavigationView
-        item.setChecked(true);
+        selectNavigationMenuItem(item);
         // Set action bar title
         setTitle(item.getTitle());
         // Close the navigation drawer

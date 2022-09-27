@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.notekeeper.CourseInfo;
+import com.example.notekeeper.CourseRecyclerAdapter;
 import com.example.notekeeper.DataManager;
 import com.example.notekeeper.NoteInfo;
 import com.example.notekeeper.NoteRecyclerAdapter;
@@ -24,10 +27,13 @@ import java.util.List;
 public class ItemListFragment extends Fragment {
     private ItemListViewModel mViewModel;
     private NoteRecyclerAdapter mNoteRecyclerAdapter;
+    private CourseRecyclerAdapter mCourseRecyclerAdapter;
     private RecyclerView mRecyclerItems;
     public static final int NOTES_MODE = 0;
     public static final int COURSES_MODE = 1;
     private LinearLayoutManager mNotesLayoutManager;
+    private GridLayoutManager mCoursesLayoutManager;
+    private int mMode;
 
     public static ItemListFragment newInstance() {
         return new ItemListFragment();
@@ -38,18 +44,11 @@ public class ItemListFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         container.removeAllViews();
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
-        int mode = 0;
+        mMode = 0;
         if (getArguments() != null) {
-            mode = getArguments().getInt("mode");
+            mMode = getArguments().getInt("mode");
         }
-        switch(mode){
-            case NOTES_MODE:
-                mRecyclerItems = view.findViewById(R.id.list_items);
-                break;
-            case COURSES_MODE:
-                mRecyclerItems = view.findViewById(R.id.list_items);
-                break;
-        }
+        mRecyclerItems = view.findViewById(R.id.list_items);
         initializeDisplayContent();
         return view;
     }
@@ -69,14 +68,30 @@ public class ItemListFragment extends Fragment {
 
     private void initializeDisplayContent() {
         mNotesLayoutManager = new LinearLayoutManager(getContext());
-
+        mCoursesLayoutManager = new GridLayoutManager(getContext(), 2);
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
         mNoteRecyclerAdapter = new NoteRecyclerAdapter(getContext(), notes);
-        displayNotes();
+
+        List<CourseInfo> courses = DataManager.getInstance().getCourses();
+        mCourseRecyclerAdapter = new CourseRecyclerAdapter(getContext(), courses);
+
+        switch(mMode){
+            case NOTES_MODE:
+                displayNotes();
+                break;
+            case COURSES_MODE:
+                displayCourses();
+                break;
+        }
     }
 
     private void displayNotes() {
         mRecyclerItems.setLayoutManager(mNotesLayoutManager);
         mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
+    }
+
+    private void displayCourses(){
+        mRecyclerItems.setLayoutManager(mCoursesLayoutManager);
+        mRecyclerItems.setAdapter(mCourseRecyclerAdapter);
     }
 }
