@@ -6,27 +6,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 
-import com.example.notekeeper.ui.noteList.NoteListFragment;
+import com.example.notekeeper.ui.itemList.ItemListFragment;
 import com.example.notekeeper.ui.slideshow.SlideshowFragment;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.notekeeper.databinding.ActivityMainBinding;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -53,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_notes, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_items, R.id.nav_gallery, R.id.nav_slideshow)
                 .setOpenableLayout(mDrawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -87,19 +82,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Bundle bundle = new Bundle();
 
         switch(item.getItemId()) {
-            case R.id.nav_notes:
-                bundle.putInt("mode", NoteListFragment.NOTES_MODE);
-                fragmentClass = NoteListFragment.class;
+            case R.id.nav_items:
+                bundle.putInt("mode", ItemListFragment.NOTES_MODE);
+                fragmentClass = ItemListFragment.class;
                 break;
             case R.id.nav_gallery:
-                bundle.putInt("mode", NoteListFragment.COURSES_MODE);
-                fragmentClass = NoteListFragment.class;
+                bundle.putInt("mode", ItemListFragment.COURSES_MODE);
+                fragmentClass = ItemListFragment.class;
                 break;
             case R.id.nav_slideshow:
                 fragmentClass = SlideshowFragment.class;
                 break;
             default:
-                fragmentClass = NoteListFragment.class;
+                fragmentClass = ItemListFragment.class;
                 break;
         }
 
@@ -114,6 +109,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.nav_host_fragment_content_main, fragment).commit();
+
+        //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ////ft.replace(R.id.nav_host_fragment_content_main, fragment); // f1_container is your FrameLayout container
+        ////ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        //ft.addToBackStack(null);
+        //ft.commit();
 
         // Highlight the selected item has been done by NavigationView
         item.setChecked(true);

@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.noteList.NoteListFragment">
+    tools:context=".ui.itemList.ItemListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_notes"
+        android:id="@+id/list_items"
         android:layout_width="409dp"
         android:layout_height="729dp"
         android:layout_marginStart="8dp"

@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_notes">
+    app:startDestination="@+id/nav_items">
 
     <fragment
-        android:id="@+id/nav_notes"
-        android:name="com.example.notekeeper.ui.noteList.NoteListFragment"
+        android:id="@+id/nav_items"
+        android:name="com.example.notekeeper.ui.itemList.ItemListFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
