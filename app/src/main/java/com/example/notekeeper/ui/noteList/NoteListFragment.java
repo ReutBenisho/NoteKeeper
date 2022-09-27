@@ -26,6 +26,8 @@ public class NoteListFragment extends Fragment {
     private NoteListViewModel mViewModel;
     private NoteRecyclerAdapter mNoteRecyclerAdapter;
     private RecyclerView mRecyclerNotes;
+    public static final int NOTES_MODE = 0;
+    public static final int COURSES_MODE = 1;
 
     public static NoteListFragment newInstance() {
         return new NoteListFragment();
@@ -36,7 +38,18 @@ public class NoteListFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_note_list, container, false);
-        mRecyclerNotes = view.findViewById(R.id.list_notes);
+        int mode = 0;
+        if (getArguments() != null) {
+            mode = getArguments().getInt("mode");
+        }
+        switch(mode){
+            case NOTES_MODE:
+                mRecyclerNotes = view.findViewById(R.id.list_notes);
+                break;
+            case COURSES_MODE:
+                mRecyclerNotes = view.findViewById(R.id.list_notes);
+                break;
+        }
         initializeDisplayContent();
         return view;
     }
