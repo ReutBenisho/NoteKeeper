@@ -5,6 +5,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.DrawerMatchers.isClosed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -13,6 +14,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 //import android.support.test.espresso.contrib.NavigationViewActions;
 //import android.support.test.espresso.contrib.RecyclerViewActions;
 //import android.view.Gravity;
+
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
 
 import android.view.Gravity;
 
@@ -42,14 +46,17 @@ public class NextThroughNotesTest {
         onView(withId(R.id.list_items)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
-        int index = 0;
-        NoteInfo note = notes.get(index);
-        onView(withId(R.id.spinner_courses)).check(
-                matches(withSpinnerText(note.getCourse().getTitle()))
-        );
-        onView(withId(R.id.text_note_title)).check(matches(withText(note.getTitle())));
-        onView(withId(R.id.text_note_text)).check(matches(withText(note.getText())));
-
+        for(int index = 0; index < notes.size(); index++) {
+            NoteInfo note = notes.get(index);
+            onView(withId(R.id.spinner_courses)).check(
+                    matches(withSpinnerText(note.getCourse().getTitle()))
+            );
+            onView(withId(R.id.text_note_title)).check(matches(withText(note.getTitle())));
+            onView(withId(R.id.text_note_text)).check(matches(withText(note.getText())));
+            if(index != notes.size() - 1)
+                onView(allOf(withId(R.id.action_next), isEnabled())).perform(click());
+        }
+        onView(withId(R.id.action_next)).check(matches(not(isEnabled())));
     }
 
 }
