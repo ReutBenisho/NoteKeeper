@@ -176,9 +176,19 @@ public class NoteActivity extends AppCompatActivity {
             mIsCancelling = true;
             finish();
             return true;
+        } else if(id == R.id.action_next){
+            moveNext();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void moveNext() {
+        saveNote();
+        ++mNotePosition;
+        mNote = DataManager.getInstance().getNotes().get(mNotePosition);
+        saveOriginalNoteValues();
+        displayNote(mSpinnerCourses, mTextNoteTitle, mTextNoteText);
     }
 
     private void openCamera() {
