@@ -42,10 +42,10 @@
     <ImageView
         android:id="@+id/image_note_image"
         android:layout_width="0dp"
-        android:layout_height="138dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/text_note_text"
         app:layout_constraintStart_toStartOf="@+id/text_note_text"
-        app:layout_constraintTop_toBottomOf="@+id/text_note_text"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        app:layout_constraintTop_toBottomOf="@+id/text_note_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
