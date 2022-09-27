@@ -13,7 +13,6 @@ import com.google.android.material.navigation.NavigationView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -48,13 +47,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_items, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_notes, R.id.nav_courses, R.id.nav_slideshow)
                 .setOpenableLayout(mDrawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().findItem(R.id.nav_notes).setChecked(true);
 
 
     }
@@ -82,11 +82,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Bundle bundle = new Bundle();
 
         switch(item.getItemId()) {
-            case R.id.nav_items:
+            case R.id.nav_notes:
                 bundle.putInt("mode", ItemListFragment.NOTES_MODE);
                 fragmentClass = ItemListFragment.class;
                 break;
-            case R.id.nav_gallery:
+            case R.id.nav_courses:
                 bundle.putInt("mode", ItemListFragment.COURSES_MODE);
                 fragmentClass = ItemListFragment.class;
                 break;

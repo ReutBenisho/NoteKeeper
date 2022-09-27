@@ -24,9 +24,10 @@ import java.util.List;
 public class ItemListFragment extends Fragment {
     private ItemListViewModel mViewModel;
     private NoteRecyclerAdapter mNoteRecyclerAdapter;
-    private RecyclerView mRecyclerNotes;
+    private RecyclerView mRecyclerItems;
     public static final int NOTES_MODE = 0;
     public static final int COURSES_MODE = 1;
+    private LinearLayoutManager mNotesLayoutManager;
 
     public static ItemListFragment newInstance() {
         return new ItemListFragment();
@@ -43,10 +44,10 @@ public class ItemListFragment extends Fragment {
         }
         switch(mode){
             case NOTES_MODE:
-                mRecyclerNotes = view.findViewById(R.id.list_items);
+                mRecyclerItems = view.findViewById(R.id.list_items);
                 break;
             case COURSES_MODE:
-                mRecyclerNotes = view.findViewById(R.id.list_items);
+                mRecyclerItems = view.findViewById(R.id.list_items);
                 break;
         }
         initializeDisplayContent();
@@ -67,11 +68,15 @@ public class ItemListFragment extends Fragment {
     }
 
     private void initializeDisplayContent() {
-        final LinearLayoutManager notesLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerNotes.setLayoutManager(notesLayoutManager);
+        mNotesLayoutManager = new LinearLayoutManager(getContext());
 
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
         mNoteRecyclerAdapter = new NoteRecyclerAdapter(getContext(), notes);
-        mRecyclerNotes.setAdapter(mNoteRecyclerAdapter);
+        displayNotes();
+    }
+
+    private void displayNotes() {
+        mRecyclerItems.setLayoutManager(mNotesLayoutManager);
+        mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
     }
 }

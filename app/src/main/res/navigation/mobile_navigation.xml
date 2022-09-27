@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_items">
+    app:startDestination="@+id/nav_notes">
 
     <fragment
-        android:id="@+id/nav_items"
+        android:id="@+id/nav_notes"
         android:name="com.example.notekeeper.ui.itemList.ItemListFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:label="Notes"
+        tools:layout="@layout/fragment_item_list" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.notekeeper.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_courses"
+        android:name="com.example.notekeeper.ui.itemList.ItemListFragment"
+        android:label="Courses"
+        tools:layout="@layout/fragment_item_list" />
 
     <fragment
         android:id="@+id/nav_slideshow"
