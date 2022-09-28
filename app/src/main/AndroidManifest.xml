@@ -34,7 +34,7 @@
             android:name=".NoteActivity"
             android:exported="true"
             android:label="@string/title_activity_note"
-            android:theme="@style/Theme.NoteKeeper.NoActionBar"></activity>
+            android:theme="@style/Theme.NoteKeeper.NoActionBar"/>
     </application>
 
 </manifest>
