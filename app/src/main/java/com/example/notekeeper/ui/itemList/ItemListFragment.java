@@ -68,7 +68,7 @@ public class ItemListFragment extends Fragment {
 
     private void initializeDisplayContent() {
         mNotesLayoutManager = new LinearLayoutManager(getContext());
-        mCoursesLayoutManager = new GridLayoutManager(getContext(), 2);
+        mCoursesLayoutManager = new GridLayoutManager(getContext(), getResources().getInteger(R.integer.course_grid_span));
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
         mNoteRecyclerAdapter = new NoteRecyclerAdapter(getContext(), notes);
 
