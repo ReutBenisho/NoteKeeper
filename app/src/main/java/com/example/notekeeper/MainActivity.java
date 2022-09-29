@@ -25,6 +25,20 @@ import com.example.notekeeper.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private AppBarConfiguration mAppBarConfiguration;
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.action_settings:
+            {
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private ActivityMainBinding binding;
     private DrawerLayout mDrawer;
 
