@@ -13,4 +13,10 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+
+    <style name="addFabNight" parent="@style/Widget.MaterialComponents.FloatingActionButton">
+        <item name="android:src">@drawable/ic_baseline_add_24</item>
+        <item name="android:tint">@android:color/white</item>
+    </style>
 </resources>
