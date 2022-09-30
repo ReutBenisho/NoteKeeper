@@ -1,0 +1,61 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/general_header">
+
+        <EditTextPreference
+            android:defaultValue="John Smith"
+            android:key="pref_display_name"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Display Name"
+            app:useSimpleSummaryProvider="true"/>
+        <EditTextPreference
+            android:defaultValue="my.email@gmail.com"
+            android:key="pref_email_address"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Email Address"
+            android:inputType="textEmailAddress"
+            app:useSimpleSummaryProvider="true"/>
+        <ListPreference
+            android:defaultValue="http://plus.google.com"
+            android:entries="@array/pref_entries_display_favorite_social"
+            android:entryValues="@array/pref_entries_values_favorite_social"
+            android:key="pref_favorite_social"
+            android:title="Favorite Social Networks"
+            app:useSimpleSummaryProvider="true"/>
+    </PreferenceCategory>
+    <PreferenceCategory app:title="@string/messages_header">
+
+        <EditTextPreference
+            app:key="signature"
+            app:title="@string/signature_title"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="reply"
+            app:entries="@array/reply_entries"
+            app:entryValues="@array/reply_values"
+            app:key="reply"
+            app:title="@string/reply_title"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/sync_header">
+
+        <SwitchPreferenceCompat
+            app:key="sync"
+            app:title="@string/sync_title" />
+
+        <SwitchPreferenceCompat
+            app:dependency="sync"
+            app:key="attachment"
+            app:summaryOff="@string/attachment_summary_off"
+            app:summaryOn="@string/attachment_summary_on"
+            app:title="@string/attachment_title" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
