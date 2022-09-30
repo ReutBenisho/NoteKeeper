@@ -1,5 +1,31 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <PreferenceCategory android:title="@string/general_header">
+
+        <EditTextPreference
+            android:defaultValue="John Smith"
+            android:key="pref_display_name"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Display Name"
+            app:useSimpleSummaryProvider="true"/>
+        <EditTextPreference
+            android:defaultValue="my.email@gmail.com"
+            android:key="pref_email_address"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Email Address"
+            android:inputType="textEmailAddress"
+            app:useSimpleSummaryProvider="true"/>
+        <ListPreference
+            android:defaultValue="http://plus.google.com"
+            android:entries="@array/pref_entries_display_favorite_social"
+            android:entryValues="@array/pref_entries_values_favorite_social"
+            android:key="pref_favorite_social"
+            android:title="Favorite Social Networks"
+            app:useSimpleSummaryProvider="true"/>
+    </PreferenceCategory>
     <PreferenceCategory app:title="@string/messages_header">
 
         <EditTextPreference
