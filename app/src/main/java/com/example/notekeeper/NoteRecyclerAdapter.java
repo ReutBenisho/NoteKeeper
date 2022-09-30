@@ -1,5 +1,6 @@
 package com.example.notekeeper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -32,11 +33,12 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
     }
 
     @Override
+    @SuppressLint("all")
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         NoteInfo note = mNotes.get(holder.getAdapterPosition());
         holder.mTxtCourse.setText(note.getCourse().getTitle());
         holder.mTxtTitle.setText(note.getTitle());
-        holder.mCurrectPosition = holder.getAdapterPosition();
+        holder.mCurrentPosition = holder.getAdapterPosition();
     }
 
     @Override
@@ -48,7 +50,7 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
 
         public final TextView mTxtCourse;
         public final TextView mTxtTitle;
-        public int mCurrectPosition;
+        public int mCurrentPosition;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -58,7 +60,7 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, NoteActivity.class);
-                    intent.putExtra(NoteActivity.NOTE_POSITION, mCurrectPosition);
+                    intent.putExtra(NoteActivity.NOTE_POSITION, mCurrentPosition);
                     mContext.startActivity(intent);
                 }
             });
