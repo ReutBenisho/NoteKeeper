@@ -36,4 +36,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Test report
-        path: build/reports/tests/testDebugUnitTest/index.html
+        path: app/build/reports/tests/testDebugUnitTest/index.html
