@@ -36,11 +36,11 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Test report
-        path: app/build/reports/tests/testDebugUnitTest/index.html
+        path: app/build/test-results/testDebugUnitTest/*xml
     - name: Test Report
       uses: dorny/test-reporter@v1
       if: success() || failure()    # run this step even if previous step failed
       with:
         name: JEST Tests            # Name of the check run which will be created
-        path: app/build/reports/tests/testDebugUnitTest/index.html     # Path to test results
+        path: app/build/test-results/testDebugUnitTest/*xml     # Path to test results
         reporter: jest-junit        # Format of test results
