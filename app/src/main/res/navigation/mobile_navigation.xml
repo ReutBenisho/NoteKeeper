@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_notes">
+
+    <fragment
+        android:id="@+id/nav_notes"
+        android:name="com.example.notekeeper.ui.itemList.ItemListFragment"
+        android:label="Notes"
+        tools:layout="@layout/fragment_item_list" />
+
+    <fragment
+        android:id="@+id/nav_courses"
+        android:name="com.example.notekeeper.ui.itemList.ItemListFragment"
+        android:label="Courses"
+        tools:layout="@layout/fragment_item_list" />
+
+    <fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.example.notekeeper.ui.slideshow.SlideshowFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/fragment_slideshow" />
+</navigation>
