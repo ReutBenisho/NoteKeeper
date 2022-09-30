@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/drawable/ic_baseline_assignment_24.xml" value="0.1" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/activity_main.xml" value="0.1796875" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/activity_note.xml" value="0.1" />
         <entry key="..\:/Users/user/AndroidStudioProjects/NoteKeeper/app/src/main/res/layout/activity_note_list.xml" value="0.165625" />
