@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
+        ((TextView)findViewById(R.id.txt_ver_number)).setText("Version: " + BuildConfig.VERSION_NAME);
 
         mDrawer = binding.drawerLayout;
         mNavigationView = binding.navView;
