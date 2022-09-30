@@ -1,10 +1,12 @@
 package com.example.notekeeper;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.TextView;
 
 import com.example.notekeeper.ui.itemList.ItemListFragment;
 import com.example.notekeeper.ui.slideshow.SlideshowFragment;
@@ -19,12 +21,27 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.example.notekeeper.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private AppBarConfiguration mAppBarConfiguration;
+    private NavigationView mNavigationView;
+
+    @Override
+    protected void onResume() {
+        updateNavHeader();
+        super.onResume();
+    }
+
+    private void updateNavHeader() {
+        View headerView = mNavigationView.getHeaderView(0);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        ((TextView)headerView.findViewById(R.id.txt_user_name)).setText(pref.getString("pref_display_name", ""));
+        ((TextView)headerView.findViewById(R.id.txt_user_email)).setText(pref.getString("pref_email_address", ""));
+    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -57,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         mDrawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
+        mNavigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -66,9 +83,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
-        navigationView.setNavigationItemSelectedListener(this);
-        selectNavigationMenuItem(navigationView.getMenu().findItem(R.id.nav_notes));
+        NavigationUI.setupWithNavController(mNavigationView, navController);
+        mNavigationView.setNavigationItemSelectedListener(this);
+        selectNavigationMenuItem(mNavigationView.getMenu().findItem(R.id.nav_notes));
     }
 
     private void selectNavigationMenuItem(MenuItem item) {
