@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import com.example.notekeeper.databinding.ActivityMainBinding;
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -73,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(new Intent(MainActivity.this, NoteActivity.class));
             }
         });
+
+        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
+
         mDrawer = binding.drawerLayout;
         mNavigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each
@@ -110,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
-        Class fragmentClass;
+        Class fragmentClass = null;
 
         Bundle bundle = new Bundle();
 
@@ -123,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 bundle.putInt("mode", ItemListFragment.COURSES_MODE);
                 fragmentClass = ItemListFragment.class;
                 break;
-            case R.id.nav_slideshow:
-                fragmentClass = SlideshowFragment.class;
+            case R.id.nav_share:
+                handleShare();
                 break;
             default:
                 fragmentClass = ItemListFragment.class;
@@ -136,25 +140,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } catch (Exception e) {
             e.printStackTrace();
         }
-// set MyFragment Arguments
-        fragment.setArguments(bundle);
 
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.nav_host_fragment_content_main, fragment).commit();
+        // set MyFragment Arguments
+        if(fragment != null) {
+            fragment.setArguments(bundle);
 
-        //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ////ft.replace(R.id.nav_host_fragment_content_main, fragment); // f1_container is your FrameLayout container
-        ////ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        //ft.addToBackStack(null);
-        //ft.commit();
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.nav_host_fragment_content_main, fragment).commit();
 
-        // Highlight the selected item has been done by NavigationView
-        selectNavigationMenuItem(item);
-        // Set action bar title
-        setTitle(item.getTitle());
+            // Highlight the selected item has been done by NavigationView
+            selectNavigationMenuItem(item);
+            // Set action bar title
+            setTitle(item.getTitle());
+        }
         // Close the navigation drawer
         mDrawer.closeDrawers();
         return true;
+    }
+
+    private void handleShare() {
+        View view = findViewById(R.id.app_bar_main);
+        Snackbar.make(view, "Share to - " +
+                PreferenceManager.getDefaultSharedPreferences(this)
+                        .getString("pref_favorite_social", ""),
+                Snackbar.LENGTH_LONG)
+                .show();
     }
 }
