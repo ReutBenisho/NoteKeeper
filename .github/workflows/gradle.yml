@@ -37,3 +37,9 @@ jobs:
       with:
         name: Test report
         path: app/build/reports/tests/testDebugUnitTest/index.html
+    - name: Test Reporter
+      uses: dorny/test-reporter@v1.5.0
+      with:
+        name: JEST Tests
+        path: app/build/reports/tests/testDebugUnitTest/index.html
+        reporter: jest-junit
