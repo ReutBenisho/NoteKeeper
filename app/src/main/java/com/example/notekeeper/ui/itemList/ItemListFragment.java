@@ -2,6 +2,7 @@ package com.example.notekeeper.ui.itemList;
 
 import androidx.lifecycle.ViewModelProvider;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,7 +19,9 @@ import android.view.ViewGroup;
 import com.example.notekeeper.CourseInfo;
 import com.example.notekeeper.CourseRecyclerAdapter;
 import com.example.notekeeper.DataManager;
+import com.example.notekeeper.MainActivity;
 import com.example.notekeeper.NoteInfo;
+import com.example.notekeeper.NoteKeeperOpenHelper;
 import com.example.notekeeper.NoteRecyclerAdapter;
 import com.example.notekeeper.R;
 
@@ -34,15 +37,23 @@ public class ItemListFragment extends Fragment {
     private LinearLayoutManager mNotesLayoutManager;
     private GridLayoutManager mCoursesLayoutManager;
     private int mMode;
+    private NoteKeeperOpenHelper mDbOpenHelper;
 
     public static ItemListFragment newInstance() {
         return new ItemListFragment();
     }
 
     @Override
+    public void onDestroyView() {
+        mDbOpenHelper.close();
+        super.onDestroyView();
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         container.removeAllViews();
+        mDbOpenHelper = new NoteKeeperOpenHelper(getActivity());
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
         mMode = 0;
         if (getArguments() != null) {
@@ -88,6 +99,9 @@ public class ItemListFragment extends Fragment {
     private void displayNotes() {
         mRecyclerItems.setLayoutManager(mNotesLayoutManager);
         mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
+
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+
     }
 
     private void displayCourses(){

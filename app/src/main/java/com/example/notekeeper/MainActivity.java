@@ -30,11 +30,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private AppBarConfiguration mAppBarConfiguration;
     private NavigationView mNavigationView;
+    public NoteKeeperOpenHelper mDbOpenHelper;
 
     @Override
     protected void onResume() {
         updateNavHeader();
         super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        //mDbOpenHelper.close();
+        super.onDestroy();
     }
 
     private void updateNavHeader() {
@@ -66,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        //mDbOpenHelper = new NoteKeeperOpenHelper(this);
 
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
