@@ -147,7 +147,7 @@ public class DataManager {
 
     //region Initialization code
 
-    private void initializeCourses() {
+    public void initializeCourses() {
         mCourses.add(initializeCourse1());
         mCourses.add(initializeCourse2());
         mCourses.add(initializeCourse3());
@@ -167,8 +167,8 @@ public class DataManager {
                 "PendingIntents are powerful; they delegate much more than just a component invocation"));
 
         course = dm.getCourse("android_async");
-        course.getModule("android_async_m01").setComplete(true);
-        course.getModule("android_async_m02").setComplete(true);
+        //course.getModule("android_async_m01").setComplete(true);
+        //course.getModule("android_async_m02").setComplete(true);
         mNotes.add(new NoteInfo(course, "Service default threads",
                 "Did you know that by default an Android Service will tie up the UI thread?"));
         mNotes.add(new NoteInfo(course, "Long running operations",

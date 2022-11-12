@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onDestroy() {
-        mDbOpenHelper.close();
+        //mDbOpenHelper.close();
         super.onDestroy();
     }
 
