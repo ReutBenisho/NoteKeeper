@@ -197,12 +197,27 @@ public class NoteActivity extends AppCompatActivity {
         String course_id = mNoteCursor.getString(mCourseIdPos);
         String note_title = mNoteCursor.getString(mNoteTitlePos);
         String note_text = mNoteCursor.getString(mNoteTextPos);
-        List<CourseInfo> courses = DataManager.getInstance().getCourses();
-        CourseInfo course = DataManager.getInstance().getCourse(course_id);
-        int courseIndex = courses.indexOf(course);
+
+        int courseIndex = getIndexOfCourseId(course_id);
         mSpinnerCourses.setSelection(courseIndex);
         mTextNoteTitle.setText(note_title);
         mTextNoteText.setText(note_text);
+    }
+
+    private int getIndexOfCourseId(String course_id) {
+        Cursor cursor = mAdapterCourses.getCursor();
+        int courseIdPos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_ID);
+        int courseRowIndex = 0;
+        boolean more = cursor.moveToFirst();
+        while(more){
+            String cursorCourseId = cursor.getString(courseIdPos);
+            if(course_id.equals(cursorCourseId)){
+                break;
+            }
+            courseRowIndex++;
+            more = cursor.moveToNext();
+        }
+        return courseRowIndex;
     }
 
     private void readDisplayStateValues() {
