@@ -33,6 +33,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public NoteKeeperOpenHelper mDbOpenHelper;
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        //mDbOpenHelper = new NoteKeeperOpenHelper(this);
+
+        setSupportActionBar(binding.appBarMain.toolbar);
+        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, NoteActivity.class));
+            }
+        });
+
+        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
+        ((TextView)findViewById(R.id.txt_ver_number)).setText("Version: " + BuildConfig.VERSION_NAME);
+
+        mDrawer = binding.drawerLayout;
+        mNavigationView = binding.navView;
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_notes, R.id.nav_courses, R.id.nav_slideshow)
+                .setOpenableLayout(mDrawer)
+                .build();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(mNavigationView, navController);
+        mNavigationView.setNavigationItemSelectedListener(this);
+        selectNavigationMenuItem(mNavigationView.getMenu().findItem(R.id.nav_notes));
+	
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         updateNavHeader();
@@ -68,41 +104,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActivityMainBinding binding;
     private DrawerLayout mDrawer;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        //mDbOpenHelper = new NoteKeeperOpenHelper(this);
-
-        setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, NoteActivity.class));
-            }
-        });
-
-        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
-        ((TextView)findViewById(R.id.txt_ver_number)).setText("Version: " + BuildConfig.VERSION_NAME);
-
-        mDrawer = binding.drawerLayout;
-        mNavigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_notes, R.id.nav_courses, R.id.nav_slideshow)
-                .setOpenableLayout(mDrawer)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(mNavigationView, navController);
-        mNavigationView.setNavigationItemSelectedListener(this);
-        selectNavigationMenuItem(mNavigationView.getMenu().findItem(R.id.nav_notes));
-	
-    }
 
     private void selectNavigationMenuItem(MenuItem item) {
         item.setChecked(true);
