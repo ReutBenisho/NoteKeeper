@@ -60,6 +60,7 @@ public class ItemListFragment extends Fragment {
             mMode = getArguments().getInt("mode");
         }
         mRecyclerItems = view.findViewById(R.id.list_items);
+        mDbOpenHelper.getReadableDatabase();
         initializeDisplayContent();
         return view;
     }
@@ -78,6 +79,7 @@ public class ItemListFragment extends Fragment {
     }
 
     private void initializeDisplayContent() {
+        DataManager.loadFromDatabase(mDbOpenHelper);
         mNotesLayoutManager = new LinearLayoutManager(getContext());
         mCoursesLayoutManager = new GridLayoutManager(getContext(), getResources().getInteger(R.integer.course_grid_span));
         List<NoteInfo> notes = DataManager.getInstance().getNotes();

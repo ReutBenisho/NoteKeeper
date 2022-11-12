@@ -34,13 +34,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onResume() {
-        updateNavHeader();
         super.onResume();
+        updateNavHeader();
+       
     }
 
     @Override
     protected void onDestroy() {
-        //mDbOpenHelper.close();
+        mDbOpenHelper.close();
         super.onDestroy();
     }
 
@@ -100,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationUI.setupWithNavController(mNavigationView, navController);
         mNavigationView.setNavigationItemSelectedListener(this);
         selectNavigationMenuItem(mNavigationView.getMenu().findItem(R.id.nav_notes));
+	
     }
 
     private void selectNavigationMenuItem(MenuItem item) {
