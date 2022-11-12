@@ -13,6 +13,7 @@ import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +26,15 @@ public class NoteCreationTest {
     @BeforeClass
     public static void classSetup(){
         sDataManager = DataManager.getInstance();
+    }
+
+    @Before
+    public void setup(){
+        sDataManager.getCourses().clear();
+        sDataManager.initializeCourses();
+        sDataManager.getNotes().clear();
+        sDataManager.initializeExampleNotes();
+
     }
     @Rule
     public ActivityTestRule<NoteListActivity> mNoteListActivityActivityTestRule =

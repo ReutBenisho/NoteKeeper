@@ -38,14 +38,7 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
         NoteInfo note = mNotes.get(holder.getAdapterPosition());
         holder.mTxtCourse.setText(note.getCourse().getTitle());
         holder.mTxtTitle.setText(note.getTitle());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext, NoteActivity.class);
-                intent.putExtra(NoteActivity.NOTE_POSITION, holder.getAdapterPosition());
-                mContext.startActivity(intent);
-            }
-        });
+        holder.mId = note.getId();
     }
 
     @Override
@@ -57,11 +50,20 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
 
         public final TextView mTxtCourse;
         public final TextView mTxtTitle;
+        public int mId;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mTxtCourse = itemView.findViewById(R.id.txt_course);
             mTxtTitle = itemView.findViewById(R.id.txt_title);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(mContext, NoteActivity.class);
+                    intent.putExtra(NoteActivity.NOTE_ID, mId);
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 
