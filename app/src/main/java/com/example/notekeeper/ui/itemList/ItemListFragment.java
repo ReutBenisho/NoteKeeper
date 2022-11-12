@@ -2,6 +2,7 @@ package com.example.notekeeper.ui.itemList;
 
 import androidx.lifecycle.ViewModelProvider;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
@@ -21,6 +22,7 @@ import com.example.notekeeper.CourseRecyclerAdapter;
 import com.example.notekeeper.DataManager;
 import com.example.notekeeper.MainActivity;
 import com.example.notekeeper.NoteInfo;
+import com.example.notekeeper.NoteKeeperDatabaseContract;
 import com.example.notekeeper.NoteKeeperOpenHelper;
 import com.example.notekeeper.NoteRecyclerAdapter;
 import com.example.notekeeper.R;
@@ -75,15 +77,27 @@ public class ItemListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mNoteRecyclerAdapter.notifyDataSetChanged();
+        loadNotes();
+    }
+
+    private void loadNotes() {
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        final String[] noteColumns = {
+                NoteKeeperDatabaseContract.NoteInfoEntry.COLUMN_NOTE_TITLE,
+                NoteKeeperDatabaseContract.NoteInfoEntry.COLUMN_COURSE_ID,
+                NoteKeeperDatabaseContract.NoteInfoEntry._ID};
+        String noteOrderBy = NoteKeeperDatabaseContract.NoteInfoEntry.COLUMN_COURSE_ID + "," + NoteKeeperDatabaseContract.NoteInfoEntry.COLUMN_NOTE_TITLE;
+        final Cursor noteCursor = db.query(NoteKeeperDatabaseContract.NoteInfoEntry.TABLE_NAME, noteColumns,
+                null, null, null, null, noteOrderBy);
+        mNoteRecyclerAdapter.changeCursor(noteCursor);
     }
 
     private void initializeDisplayContent() {
         DataManager.loadFromDatabase(mDbOpenHelper);
         mNotesLayoutManager = new LinearLayoutManager(getContext());
         mCoursesLayoutManager = new GridLayoutManager(getContext(), getResources().getInteger(R.integer.course_grid_span));
-        List<NoteInfo> notes = DataManager.getInstance().getNotes();
-        mNoteRecyclerAdapter = new NoteRecyclerAdapter(getContext(), notes);
+
+        mNoteRecyclerAdapter = new NoteRecyclerAdapter(getContext(), null);
 
         List<CourseInfo> courses = DataManager.getInstance().getCourses();
         mCourseRecyclerAdapter = new CourseRecyclerAdapter(getContext(), courses);
