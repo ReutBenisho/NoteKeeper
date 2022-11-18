@@ -4,14 +4,24 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public final class NoteInfo implements Parcelable{
+    private int mId;
     private CourseInfo mCourse;
     private String mTitle;
     private String mText;
+
 
     public NoteInfo(CourseInfo course, String title, String text) {
         mCourse = course;
         mTitle = title;
         mText = text;
+        mId = 0;
+    }
+
+    public NoteInfo(int id, CourseInfo course, String title, String text) {
+        mCourse = course;
+        mTitle = title;
+        mText = text;
+        mId = id;
     }
 
     private NoteInfo(Parcel parcel) {
@@ -92,4 +102,8 @@ public final class NoteInfo implements Parcelable{
                     return new NoteInfo[size];
                 }
             };
+
+    public int getId() {
+        return mId;
+    }
 }
