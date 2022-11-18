@@ -1,5 +1,6 @@
 package com.example.notekeeper;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -196,9 +197,31 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void saveNote() {
-        mNote.setCourse((CourseInfo) mSpinnerCourses.getSelectedItem());//potential crash
-        mNote.setTitle(mTextNoteTitle.getText().toString());
-        mNote.setText(mTextNoteText.getText().toString());
+        String course_id = selectedCourseId();
+        String note_title = mTextNoteTitle.getText().toString();
+        String note_text = mTextNoteText.getText().toString();
+        saveNoteToDatabase(course_id, note_title, note_text);
+    }
+
+    private String selectedCourseId() {
+        int selectedPosition = mSpinnerCourses.getSelectedItemPosition();
+        Cursor cursor = mAdapterCourses.getCursor();
+        cursor.moveToPosition(selectedPosition);
+        int courseIdPos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_ID);
+        String course_id = cursor.getString(courseIdPos);
+        return  course_id;
+    }
+
+    private void saveNoteToDatabase(String course_id, String note_title, String note_text){
+        String selection = NoteInfoEntry._ID + " = ? ";
+        String[] selectionArgs = {Integer.toString(mNoteId)};
+
+        ContentValues values = new ContentValues();
+        values.put(NoteInfoEntry.COLUMN_COURSE_ID, course_id);
+        values.put(NoteInfoEntry.COLUMN_NOTE_TITLE, note_title);
+        values.put(NoteInfoEntry.COLUMN_NOTE_TEXT, note_text);
+        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+        db.update(NoteInfoEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
     private void displayNote() {
