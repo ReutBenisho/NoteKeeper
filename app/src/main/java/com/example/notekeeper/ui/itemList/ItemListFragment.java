@@ -1,5 +1,7 @@
 package com.example.notekeeper.ui.itemList;
 
+import static com.example.notekeeper.NoteActivity.LOADER_NOTES;
+
 import androidx.lifecycle.ViewModelProvider;
 
 import android.database.Cursor;
@@ -9,6 +11,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +34,7 @@ import com.example.notekeeper.R;
 
 import java.util.List;
 
-public class ItemListFragment extends Fragment {
+public class ItemListFragment extends Fragment  implements LoaderManager.LoaderCallbacks<Cursor> {
     private ItemListViewModel mViewModel;
     private NoteRecyclerAdapter mNoteRecyclerAdapter;
     private CourseRecyclerAdapter mCourseRecyclerAdapter;
@@ -40,6 +45,7 @@ public class ItemListFragment extends Fragment {
     private GridLayoutManager mCoursesLayoutManager;
     private int mMode;
     private NoteKeeperOpenHelper mDbOpenHelper;
+    private boolean mCreatedLoader;
 
     public static ItemListFragment newInstance() {
         return new ItemListFragment();
@@ -61,6 +67,7 @@ public class ItemListFragment extends Fragment {
         if (getArguments() != null) {
             mMode = getArguments().getInt("mode");
         }
+
         mRecyclerItems = view.findViewById(R.id.list_items);
         mDbOpenHelper.getReadableDatabase();
         initializeDisplayContent();
@@ -77,7 +84,8 @@ public class ItemListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        loadNotes();
+        getActivity().getSupportLoaderManager().restartLoader(LOADER_NOTES, null, this);
+
     }
 
     private void loadNotes() {
@@ -123,5 +131,49 @@ public class ItemListFragment extends Fragment {
     private void displayCourses(){
         mRecyclerItems.setLayoutManager(mCoursesLayoutManager);
         mRecyclerItems.setAdapter(mCourseRecyclerAdapter);
+    }
+
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+        CursorLoader loader = null;
+        if(id == LOADER_NOTES){
+            loader = new CursorLoader(getContext()){
+                @Override
+                public Cursor loadInBackground() {
+
+                    SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+                    final String[] noteColumns = {
+                            NoteKeeperDatabaseContract.NoteInfoEntry.COLUMN_NOTE_TITLE,
+                            NoteKeeperDatabaseContract.NoteInfoEntry.COLUMN_COURSE_ID,
+                            NoteKeeperDatabaseContract.NoteInfoEntry._ID};
+                    String noteOrderBy = NoteKeeperDatabaseContract.NoteInfoEntry.COLUMN_COURSE_ID + "," + NoteKeeperDatabaseContract.NoteInfoEntry.COLUMN_NOTE_TITLE;
+                    return db.query(NoteKeeperDatabaseContract.NoteInfoEntry.TABLE_NAME, noteColumns,
+                            null, null, null, null, noteOrderBy);
+
+                }
+            };
+        }
+        mCreatedLoader = true;
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+        if(!mCreatedLoader)
+            return;
+        mCreatedLoader = false;
+        if(loader.getId() == LOADER_NOTES){
+            mNoteRecyclerAdapter.changeCursor(data);
+            //getActivity().getSupportLoaderManager().destroyLoader(LOADER_NOTES);
+
+        }
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+        if(loader.getId() == LOADER_NOTES){
+            mNoteRecyclerAdapter.changeCursor(null);
+        }
     }
 }
