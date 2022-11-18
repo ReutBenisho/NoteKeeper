@@ -30,35 +30,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private AppBarConfiguration mAppBarConfiguration;
     private NavigationView mNavigationView;
-
-    @Override
-    protected void onResume() {
-        updateNavHeader();
-        super.onResume();
-    }
-
-    private void updateNavHeader() {
-        View headerView = mNavigationView.getHeaderView(0);
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        ((TextView)headerView.findViewById(R.id.txt_user_name)).setText(pref.getString("pref_display_name", ""));
-        ((TextView)headerView.findViewById(R.id.txt_user_email)).setText(pref.getString("pref_email_address", ""));
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        switch (id){
-            case R.id.action_settings:
-            {
-                startActivity(new Intent(this, SettingsActivity.class));
-                return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private ActivityMainBinding binding;
-    private DrawerLayout mDrawer;
+    public NoteKeeperOpenHelper mDbOpenHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        //mDbOpenHelper = new NoteKeeperOpenHelper(this);
 
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +65,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationUI.setupWithNavController(mNavigationView, navController);
         mNavigationView.setNavigationItemSelectedListener(this);
         selectNavigationMenuItem(mNavigationView.getMenu().findItem(R.id.nav_notes));
+	
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateNavHeader();
+       
+    }
+
+    @Override
+    protected void onDestroy() {
+        //mDbOpenHelper.close();
+        super.onDestroy();
+    }
+
+    private void updateNavHeader() {
+        View headerView = mNavigationView.getHeaderView(0);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        ((TextView)headerView.findViewById(R.id.txt_user_name)).setText(pref.getString("pref_display_name", ""));
+        ((TextView)headerView.findViewById(R.id.txt_user_email)).setText(pref.getString("pref_email_address", ""));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.action_settings:
+            {
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private ActivityMainBinding binding;
+    private DrawerLayout mDrawer;
+
 
     private void selectNavigationMenuItem(MenuItem item) {
         item.setChecked(true);

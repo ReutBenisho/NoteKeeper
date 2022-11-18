@@ -25,6 +25,8 @@ import androidx.test.espresso.contrib.NavigationViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.rule.ActivityTestRule;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -36,6 +38,21 @@ public class NextThroughNotesTest {
     public ActivityTestRule<MainActivity> mActivityTestRule =
             new ActivityTestRule<>(MainActivity.class);
 
+    static DataManager sDataManager;
+
+    @BeforeClass
+    public static void classSetup(){
+        sDataManager = DataManager.getInstance();
+    }
+    @Before
+    public void setup(){
+        sDataManager.getCourses().clear();
+        sDataManager.initializeCourses();
+        sDataManager.getNotes().clear();
+        sDataManager.initializeExampleNotes();
+
+    }
+
     @Test
     public void NextThroughNotes(){
 
@@ -45,7 +62,7 @@ public class NextThroughNotesTest {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_notes));
         onView(withId(R.id.list_items)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
-        List<NoteInfo> notes = DataManager.getInstance().getNotes();
+        List<NoteInfo> notes = sDataManager.getInstance().getNotes();
         for(int index = 0; index < notes.size(); index++) {
             NoteInfo note = notes.get(index);
             onView(withId(R.id.spinner_courses)).check(
