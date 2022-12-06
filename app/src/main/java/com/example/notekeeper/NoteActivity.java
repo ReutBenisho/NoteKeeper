@@ -424,13 +424,14 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private CursorLoader createLoaderCourses() {
         mCoursesQueryFinished = false;
-        Uri uri = Uri.parse("content://com.example.notekeeper.provider");
+        Uri uri = NoteKeeperProviderContract.Courses.CONTENT_URI;
         String[] courseColumns = {
-                CourseInfoEntry.COLUMN_COURSE_TITLE,
-                CourseInfoEntry.COLUMN_COURSE_ID,
-                CourseInfoEntry._ID
+                NoteKeeperProviderContract.Courses.COLUMN_COURSE_TITLE,
+                NoteKeeperProviderContract.Courses.COLUMN_COURSE_ID,
+                NoteKeeperProviderContract.Courses._ID
         };
-        return new CursorLoader(this, uri, courseColumns, null, null, CourseInfoEntry.COLUMN_COURSE_TITLE);
+        return new CursorLoader(this, uri, courseColumns, null, null,
+                NoteKeeperProviderContract.Courses.COLUMN_COURSE_TITLE);
     }
 
     private void loadFinishedNotes(Cursor data) {
