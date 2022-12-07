@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        //mDbOpenHelper = new NoteKeeperOpenHelper(this);
+        enableStrictMode();
 
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
@@ -73,6 +74,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             NotificationChannel channel = new NotificationChannel("NoteKeeperNotify", "NoteKeeperNotify", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
+        }
+    }
+
+    private void enableStrictMode() {
+        if(BuildConfig.DEBUG){
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build();
+
+            StrictMode.setThreadPolicy(policy);
         }
     }
 

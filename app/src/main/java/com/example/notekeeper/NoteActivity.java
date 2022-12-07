@@ -38,9 +38,11 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
@@ -299,14 +301,53 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         values.put(NoteKeeperProviderContract.Notes.COLUMN_NOTE_TITLE, "");
         values.put(NoteKeeperProviderContract.Notes.COLUMN_NOTE_TEXT, "");
 
-        AsyncTask task = new AsyncTask() {
+        AsyncTask<ContentValues, Integer, Uri> task = new AsyncTask<ContentValues, Integer, Uri>() {
+            ProgressBar mProgressBar;
+
             @Override
-            protected Object doInBackground(Object[] objects) {
-                mNoteUri = getContentResolver().insert(NoteKeeperProviderContract.Notes.CONTENT_URI, values);
-                return null;
+            protected void onPreExecute() {
+                mProgressBar = findViewById(R.id.progressBar2);
+                mProgressBar.setVisibility(View.VISIBLE);
+                mProgressBar.setProgress(1);
+            }
+
+            @Override
+            protected Uri doInBackground(ContentValues... contentValues) {
+                ContentValues insertValues = contentValues[0];
+                try {
+                    simulateLongRunningWork();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                publishProgress(2);
+                Uri uri = getContentResolver().insert(NoteKeeperProviderContract.Notes.CONTENT_URI, insertValues);
+                try {
+                    simulateLongRunningWork();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                publishProgress(3);
+                return uri;
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... values) {
+                int val = values[0];
+                mProgressBar.setProgress(val);
+            }
+
+            @Override
+            protected void onPostExecute(Uri uri) {
+                mNoteUri = uri;
+                mProgressBar.setVisibility(View.GONE);
             }
         };
-        task.execute();
+
+        task.execute(values);
+    }
+
+    private void simulateLongRunningWork() throws InterruptedException {
+        Thread.sleep(4000);
     }
 
     @Override
