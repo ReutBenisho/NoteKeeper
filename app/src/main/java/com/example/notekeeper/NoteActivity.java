@@ -1,5 +1,7 @@
 package com.example.notekeeper;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -8,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.example.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry;
@@ -18,6 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
@@ -325,9 +330,28 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
             return true;
         } else if(id == R.id.action_next){
             moveNext();
+        } else if(id == R.id.action_set_reminder){
+            showReminderNotification();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showReminderNotification() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel("NoteKeeperNotify", "NoteKeeperNotify", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "NoteKeeperNotify");
+        builder.setContentTitle("My Title");
+        builder.setContentText("This is the text for simple notification");
+        builder.setSmallIcon(R.drawable.ic_baseline_assignment_24);
+        builder.setAutoCancel(true);
+
+        NotificationManagerCompat manager = NotificationManagerCompat.from(this);
+        manager.notify(1, builder.build());
     }
 
     @Override
