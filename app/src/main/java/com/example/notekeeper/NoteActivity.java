@@ -1,13 +1,20 @@
 package com.example.notekeeper;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.example.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry;
@@ -18,6 +25,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
@@ -325,9 +335,49 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
             return true;
         } else if(id == R.id.action_next){
             moveNext();
+        } else if(id == R.id.action_set_reminder){
+            showReminderNotification();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    static int i = 1;
+
+    private void showReminderNotification() {
+        int noteId = (int) ContentUris.parseId(mNoteUri);
+        Intent noteActivityIntent = new Intent(this, NoteActivity.class);
+        noteActivityIntent.putExtra(NoteActivity.NOTE_ID, noteId);
+
+        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_menu_camera);
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "NoteKeeperNotify")
+                .setContentTitle("My Title")
+                .setContentText(mTextNoteText.getText().toString())
+                //Showing the picture too big -same as new notifications
+//                .setStyle(new NotificationCompat.BigPictureStyle()
+//                        .bigPicture(bitmap)
+//                        .bigLargeIcon(null))
+                .setSmallIcon(R.drawable.ic_baseline_assignment_24)
+                .setLargeIcon(bitmap)
+                .setAutoCancel(true)
+                .setTicker("My Title")
+                .setNumber(i++)
+                .setContentIntent(
+                        PendingIntent.getActivity(this, 0, noteActivityIntent, PendingIntent.FLAG_MUTABLE))
+                .addAction(
+                        0,
+                        "View all notes",
+                        PendingIntent.getActivity(this, 0,
+                                new Intent(this, MainActivity.class), PendingIntent.FLAG_MUTABLE));
+
+        NotificationManagerCompat manager = NotificationManagerCompat.from(this);
+        manager.notify(1, builder.build());
     }
 
     @Override
