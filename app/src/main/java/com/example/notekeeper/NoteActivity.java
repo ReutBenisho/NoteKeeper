@@ -2,6 +2,7 @@ package com.example.notekeeper;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -344,6 +345,10 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     static int i = 1;
 
     private void showReminderNotification() {
+        int noteId = (int) ContentUris.parseId(mNoteUri);
+        Intent noteActivityIntent = new Intent(this, NoteActivity.class);
+        noteActivityIntent.putExtra(NoteActivity.NOTE_ID, noteId);
+
         Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_menu_camera);
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
                 drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
@@ -362,7 +367,10 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
                 .setLargeIcon(bitmap)
                 .setAutoCancel(true)
                 .setTicker("My Title")
-                .setNumber(i++);
+                .setNumber(i++)
+                .setContentIntent(
+                        PendingIntent.getActivity(this, 0, noteActivityIntent, PendingIntent.FLAG_MUTABLE));
+
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(this);
         manager.notify(1, builder.build());
