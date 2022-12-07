@@ -369,8 +369,12 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
                 .setTicker("My Title")
                 .setNumber(i++)
                 .setContentIntent(
-                        PendingIntent.getActivity(this, 0, noteActivityIntent, PendingIntent.FLAG_MUTABLE));
-
+                        PendingIntent.getActivity(this, 0, noteActivityIntent, PendingIntent.FLAG_MUTABLE))
+                .addAction(
+                        0,
+                        "View all notes",
+                        PendingIntent.getActivity(this, 0,
+                                new Intent(this, MainActivity.class), PendingIntent.FLAG_MUTABLE));
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(this);
         manager.notify(1, builder.build());
