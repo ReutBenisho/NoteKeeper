@@ -1,6 +1,7 @@
 package com.example.notekeeper;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -15,6 +16,7 @@ import com.example.notekeeper.NoteKeeperProviderContract.Courses;
 import com.example.notekeeper.NoteKeeperProviderContract.Notes;
 
 public class NoteKeeperProvider extends ContentProvider {
+
 
     private NoteKeeperOpenHelper mDbOpenHelper;
     private static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -34,6 +36,9 @@ public class NoteKeeperProvider extends ContentProvider {
         sUriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Courses.PATH + "/#", COURSES_ROW);
         sUriMatcher.addURI(NoteKeeperProviderContract.AUTHORITY, Notes.PATH_EXPANDED + "/#", NOTES_EXPANDED_ROW);
     }
+
+    private static final String MIME_VENDOR_TYPE = "vnd." + NoteKeeperProviderContract.AUTHORITY + ".";
+
     public NoteKeeperProvider() {
     }
 
@@ -77,32 +82,30 @@ public class NoteKeeperProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-//        String mimeType = null;
-//        int uriMatch = sUriMatcher.match(uri);
-//        switch(uriMatch){
-//            case COURSES:
-//
-//                mimeType = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" +
-//                        MIME_VENDOR_TYPE + Courses.PATH;
-//                break;
-//            case NOTES:
-//                mimeType = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH;
-//                break;
-//            case NOTES_EXPANDED:
-//                mimeType = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH_EXPANDED;
-//                break;
-//            case COURSES_ROW:
-//                mimeType = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Courses.PATH;
-//                break;
-//            case NOTES_ROW:
-//                mimeType = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH;
-//                break;
-//            case NOTES_EXPANDED_ROW:
-//                mimeType = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH_EXPANDED;
-//                break;
-//        }
-//        return mimeType;
-        return null;
+        String mimeType = null;
+        int uriMatch = sUriMatcher.match(uri);
+        switch(uriMatch){
+            case COURSES:
+                mimeType = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" +
+                        MIME_VENDOR_TYPE + Courses.PATH;
+                break;
+            case NOTES:
+                mimeType = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH;
+                break;
+            case NOTES_EXPANDED:
+                mimeType = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH_EXPANDED;
+                break;
+            case COURSES_ROW:
+                mimeType = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Courses.PATH;
+                break;
+            case NOTES_ROW:
+                mimeType = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH;
+                break;
+            case NOTES_EXPANDED_ROW:
+                mimeType = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + MIME_VENDOR_TYPE + Notes.PATH_EXPANDED;
+                break;
+        }
+        return mimeType;
     }
 
     @Override
