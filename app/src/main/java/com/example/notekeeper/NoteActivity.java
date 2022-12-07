@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -23,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
@@ -337,18 +341,28 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         return super.onOptionsItemSelected(item);
     }
 
-    private void showReminderNotification() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel channel = new NotificationChannel("NoteKeeperNotify", "NoteKeeperNotify", NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
+    static int i = 1;
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "NoteKeeperNotify");
-        builder.setContentTitle("My Title");
-        builder.setContentText("This is the text for simple notification");
-        builder.setSmallIcon(R.drawable.ic_baseline_assignment_24);
-        builder.setAutoCancel(true);
+    private void showReminderNotification() {
+        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_menu_camera);
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "NoteKeeperNotify")
+                .setContentTitle("My Title")
+                .setContentText(mTextNoteText.getText().toString())
+                //Showing the picture too big -same as new notifications
+//                .setStyle(new NotificationCompat.BigPictureStyle()
+//                        .bigPicture(bitmap)
+//                        .bigLargeIcon(null))
+                .setSmallIcon(R.drawable.ic_baseline_assignment_24)
+                .setLargeIcon(bitmap)
+                .setAutoCancel(true)
+                .setTicker("My Title")
+                .setNumber(i++);
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(this);
         manager.notify(1, builder.build());

@@ -1,7 +1,10 @@
 package com.example.notekeeper;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,7 +68,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationUI.setupWithNavController(mNavigationView, navController);
         mNavigationView.setNavigationItemSelectedListener(this);
         selectNavigationMenuItem(mNavigationView.getMenu().findItem(R.id.nav_notes));
-	
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel("NoteKeeperNotify", "NoteKeeperNotify", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
     }
 
     @Override
