@@ -1,10 +1,12 @@
 package com.example.notekeeper;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -66,6 +68,7 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     private SimpleCursorAdapter mAdapterCourses;
     private boolean mCoursesQueryFinished;
     private boolean mNotesQueryFinished;
+    private Uri mNoteUri;
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -191,14 +194,10 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void deleteNoteFromDatabase() {
-        final String selection = NoteInfoEntry._ID + " = ?";
-        final String[] selectionArgs = {Integer.toString(mNoteId)};
-
         AsyncTask task = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
-                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-                db.delete(NoteInfoEntry.TABLE_NAME, selection, selectionArgs);
+                getContentResolver().delete(mNoteUri, null, null);
                 return null;
             }
         };
@@ -229,20 +228,16 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void saveNoteToDatabase(String course_id, String note_title, String note_text){
-        final String selection = NoteInfoEntry._ID + " = ? ";
-        final String[] selectionArgs = {Integer.toString(mNoteId)};
-
         final ContentValues values = new ContentValues();
-        values.put(NoteInfoEntry.COLUMN_COURSE_ID, course_id);
-        values.put(NoteInfoEntry.COLUMN_NOTE_TITLE, note_title);
-        values.put(NoteInfoEntry.COLUMN_NOTE_TEXT, note_text);
+        values.put(NoteKeeperProviderContract.Notes.COLUMN_COURSE_ID, course_id);
+        values.put(NoteKeeperProviderContract.Notes.COLUMN_NOTE_TITLE, note_title);
+        values.put(NoteKeeperProviderContract.Notes.COLUMN_NOTE_TEXT, note_text);
 
 
         AsyncTask task = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
-                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-                db.update(NoteInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                getContentResolver().update(mNoteUri, values, null, null);
                 return null;
             }
         };
@@ -290,15 +285,14 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void createNewNote() {
         final ContentValues values = new ContentValues();
-        values.put(NoteInfoEntry.COLUMN_COURSE_ID, "");
-        values.put(NoteInfoEntry.COLUMN_NOTE_TITLE, "");
-        values.put(NoteInfoEntry.COLUMN_NOTE_TEXT, "");
+        values.put(NoteKeeperProviderContract.Notes.COLUMN_COURSE_ID, "");
+        values.put(NoteKeeperProviderContract.Notes.COLUMN_NOTE_TITLE, "");
+        values.put(NoteKeeperProviderContract.Notes.COLUMN_NOTE_TEXT, "");
 
         AsyncTask task = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
-                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-                mNoteId = (int) db.insert(NoteInfoEntry.TABLE_NAME, null, values);
+                mNoteUri = getContentResolver().insert(NoteKeeperProviderContract.Notes.CONTENT_URI, values);
                 return null;
             }
         };
@@ -394,20 +388,14 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private CursorLoader createLoaderNotes() {
         mNotesQueryFinished = false;
-        return new CursorLoader(this) {
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-                String selection = NoteInfoEntry._ID + " = ? ";
-                String[] selectionArgs = {Integer.toString(mNoteId)};
-                String[] noteColumns = {
-                        NoteInfoEntry.COLUMN_COURSE_ID,
-                        NoteInfoEntry.COLUMN_NOTE_TITLE,
-                        NoteInfoEntry.COLUMN_NOTE_TEXT
-                };
-                return db.query(NoteInfoEntry.TABLE_NAME, noteColumns, selection, selectionArgs, null, null, null);
-            }
+        String[] noteColumns = {
+                NoteKeeperProviderContract.Notes.COLUMN_COURSE_ID,
+                NoteKeeperProviderContract.Notes.COLUMN_NOTE_TITLE,
+                NoteKeeperProviderContract.Notes.COLUMN_NOTE_TEXT
         };
+
+        mNoteUri = ContentUris.withAppendedId(NoteKeeperProviderContract.Notes.CONTENT_URI, mNoteId);
+        return new CursorLoader(this, mNoteUri, noteColumns, null, null, null);
     }
 
     @Override
@@ -423,19 +411,14 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private CursorLoader createLoaderCourses() {
         mCoursesQueryFinished = false;
-        return new CursorLoader(this){
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-                String[] courseColumns = {
-                        CourseInfoEntry.COLUMN_COURSE_TITLE,
-                        CourseInfoEntry.COLUMN_COURSE_ID,
-                        CourseInfoEntry._ID
-                };
-                Cursor cursor = db.query(CourseInfoEntry.TABLE_NAME, courseColumns, null, null, null, null, CourseInfoEntry.COLUMN_COURSE_TITLE);
-                return cursor;
-            }
+        Uri uri = NoteKeeperProviderContract.Courses.CONTENT_URI;
+        String[] courseColumns = {
+                NoteKeeperProviderContract.Courses.COLUMN_COURSE_TITLE,
+                NoteKeeperProviderContract.Courses.COLUMN_COURSE_ID,
+                NoteKeeperProviderContract.Courses._ID
         };
+        return new CursorLoader(this, uri, courseColumns, null, null,
+                NoteKeeperProviderContract.Courses.COLUMN_COURSE_TITLE);
     }
 
     private void loadFinishedNotes(Cursor data) {
