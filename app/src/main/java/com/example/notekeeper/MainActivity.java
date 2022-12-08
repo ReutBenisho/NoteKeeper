@@ -2,10 +2,14 @@ package com.example.notekeeper;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.os.StrictMode;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AppBarConfiguration mAppBarConfiguration;
     private NavigationView mNavigationView;
     public NoteKeeperOpenHelper mDbOpenHelper;
+    private static final int NOTE_UPLOADER_JOB_ID = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +124,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             case R.id.action_backup_notes: {
                 backupNotes();
+                return true;
+            }
+            case R.id.action_upload_notes: {
+                scheduleNoteUpload();
+                return true;
             }
         }
         return super.onOptionsItemSelected(item);
@@ -128,6 +138,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(this, NoteBackupService.class);
         intent.putExtra(NoteBackupService.EXTRA_COURSE_ID, NoteBackup.ALL_COURSES);
         startService(intent);
+    }
+    private void scheduleNoteUpload() {
+        PersistableBundle extras = new PersistableBundle();
+        extras.putString(NoteUploaderJobService.EXTRA_DATA_URI, NoteKeeperProviderContract.Notes.CONTENT_URI.toString());
+
+        ComponentName componentName = new ComponentName(this, NoteUploaderJobService.class);
+        JobInfo jobInfo = new JobInfo.Builder(NOTE_UPLOADER_JOB_ID, componentName)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setExtras(extras)
+                .build();
+
+        JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        jobScheduler.schedule(jobInfo);
     }
 
     private ActivityMainBinding binding;
