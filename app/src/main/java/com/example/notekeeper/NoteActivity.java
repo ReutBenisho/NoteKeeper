@@ -1,5 +1,6 @@
 package com.example.notekeeper;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -34,6 +35,7 @@ import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 import androidx.navigation.ui.AppBarConfiguration;
 
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -46,6 +48,7 @@ import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class NoteActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -385,54 +388,38 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         return super.onOptionsItemSelected(item);
     }
 
-    static int i = 1;
 
     private void showReminderNotification() {
+        String noteTitle = mTextNoteTitle.getText().toString();
+        String noteText = mTextNoteText.getText().toString();
         int noteId = (int) ContentUris.parseId(mNoteUri);
-        Intent noteActivityIntent = new Intent(this, NoteActivity.class);
-        noteActivityIntent.putExtra(NoteActivity.NOTE_ID, noteId);
-
-        Intent backupServiceIntent = new Intent(this, NoteBackupService.class);
-        backupServiceIntent.putExtra(NoteBackupService.EXTRA_COURSE_ID, NoteBackup.ALL_COURSES);
 
 
-        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_menu_camera);
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
+        Intent intent = new Intent(this, NoteReminderReceiver.class);
+        intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_TITLE, noteTitle);
+        intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_TEXT, noteText);
+        intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_ID, noteId);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "NoteKeeperNotify")
-                .setContentTitle("My Title")
-                .setContentText(mTextNoteText.getText().toString())
-                //Showing the picture too big -same as new notifications
-//                .setStyle(new NotificationCompat.BigPictureStyle()
-//                        .bigPicture(bitmap)
-//                        .bigLargeIcon(null))
-                .setSmallIcon(R.drawable.ic_baseline_assignment_24)
-                .setLargeIcon(bitmap)
-                .setAutoCancel(true)
-                .setTicker("My Title")
-                .setNumber(i++)
-                .setContentIntent(
-                        PendingIntent.getActivity(this, 0, noteActivityIntent, PendingIntent.FLAG_MUTABLE))
-                .addAction(
-                        0,
-                        "View all notes",
-                        PendingIntent.getActivity(this, 0,
-                                new Intent(this, MainActivity.class), PendingIntent.FLAG_MUTABLE))
-                .addAction(
-                        0,
-                        "Backup notes",
-                        PendingIntent.getService(
-                                this,
-                                0,
-                                backupServiceIntent,
-                                PendingIntent.FLAG_UPDATE_CURRENT));
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationManagerCompat manager = NotificationManagerCompat.from(this);
-        manager.notify(1, builder.build());
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        long currentTimeInMilliseconds = SystemClock.elapsedRealtime();
+        long ONE_HOUR = 60 * 60 * 1000;
+        long TEN_SECONDS = 10 * 1000;
+        long alarmTime = currentTimeInMilliseconds + TEN_SECONDS;
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME, alarmTime, pendingIntent);
+
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(System.currentTimeMillis());
+//        calendar.add(Calendar.SECOND, 0);
+//        calendar.add(Calendar.MINUTE, 50);
+//        calendar.add(Calendar.HOUR, 16);
+//
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000*60*60*24, pendingIntent);
+
+
+
     }
 
     @Override
