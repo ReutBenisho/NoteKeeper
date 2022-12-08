@@ -390,6 +390,10 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         Intent noteActivityIntent = new Intent(this, NoteActivity.class);
         noteActivityIntent.putExtra(NoteActivity.NOTE_ID, noteId);
 
+        Intent backupServiceIntent = new Intent(this, NoteBackupService.class);
+        backupServiceIntent.putExtra(NoteBackupService.EXTRA_COURSE_ID, NoteBackup.ALL_COURSES);
+
+
         Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_menu_camera);
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
                 drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
@@ -415,7 +419,15 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
                         0,
                         "View all notes",
                         PendingIntent.getActivity(this, 0,
-                                new Intent(this, MainActivity.class), PendingIntent.FLAG_MUTABLE));
+                                new Intent(this, MainActivity.class), PendingIntent.FLAG_MUTABLE))
+                .addAction(
+                        0,
+                        "Backup notes",
+                        PendingIntent.getService(
+                                this,
+                                0,
+                                backupServiceIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT));
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(this);
         manager.notify(1, builder.build());

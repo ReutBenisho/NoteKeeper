@@ -19,6 +19,11 @@
             android:enabled="true"
             android:exported="true"></provider>
 
+        <service
+            android:name=".NoteBackupService"
+            android:exported="false">
+        </service>
+
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
