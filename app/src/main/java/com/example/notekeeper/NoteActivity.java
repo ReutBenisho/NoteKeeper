@@ -1,5 +1,6 @@
 package com.example.notekeeper;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -34,16 +35,20 @@ import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 import androidx.navigation.ui.AppBarConfiguration;
 
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class NoteActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -263,6 +268,8 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         mSpinnerCourses.setSelection(courseIndex);
         mTextNoteTitle.setText(note_title);
         mTextNoteText.setText(note_text);
+
+        CourseEventBroadcastHelper.sendEventBroadcast(this, course_id, "Editing Note");
     }
 
     private int getIndexOfCourseId(String course_id) {
@@ -299,14 +306,53 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         values.put(NoteKeeperProviderContract.Notes.COLUMN_NOTE_TITLE, "");
         values.put(NoteKeeperProviderContract.Notes.COLUMN_NOTE_TEXT, "");
 
-        AsyncTask task = new AsyncTask() {
+        AsyncTask<ContentValues, Integer, Uri> task = new AsyncTask<ContentValues, Integer, Uri>() {
+            ProgressBar mProgressBar;
+
             @Override
-            protected Object doInBackground(Object[] objects) {
-                mNoteUri = getContentResolver().insert(NoteKeeperProviderContract.Notes.CONTENT_URI, values);
-                return null;
+            protected void onPreExecute() {
+                mProgressBar = findViewById(R.id.progressBar2);
+                mProgressBar.setVisibility(View.VISIBLE);
+                mProgressBar.setProgress(1);
+            }
+
+            @Override
+            protected Uri doInBackground(ContentValues... contentValues) {
+                ContentValues insertValues = contentValues[0];
+                try {
+                    simulateLongRunningWork();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                publishProgress(2);
+                Uri uri = getContentResolver().insert(NoteKeeperProviderContract.Notes.CONTENT_URI, insertValues);
+                try {
+                    simulateLongRunningWork();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                publishProgress(3);
+                return uri;
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... values) {
+                int val = values[0];
+                mProgressBar.setProgress(val);
+            }
+
+            @Override
+            protected void onPostExecute(Uri uri) {
+                mNoteUri = uri;
+                mProgressBar.setVisibility(View.GONE);
             }
         };
-        task.execute();
+
+        task.execute(values);
+    }
+
+    private void simulateLongRunningWork() throws InterruptedException {
+        Thread.sleep(4000);
     }
 
     @Override
@@ -342,42 +388,38 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         return super.onOptionsItemSelected(item);
     }
 
-    static int i = 1;
 
     private void showReminderNotification() {
+        String noteTitle = mTextNoteTitle.getText().toString();
+        String noteText = mTextNoteText.getText().toString();
         int noteId = (int) ContentUris.parseId(mNoteUri);
-        Intent noteActivityIntent = new Intent(this, NoteActivity.class);
-        noteActivityIntent.putExtra(NoteActivity.NOTE_ID, noteId);
 
-        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_menu_camera);
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "NoteKeeperNotify")
-                .setContentTitle("My Title")
-                .setContentText(mTextNoteText.getText().toString())
-                //Showing the picture too big -same as new notifications
-//                .setStyle(new NotificationCompat.BigPictureStyle()
-//                        .bigPicture(bitmap)
-//                        .bigLargeIcon(null))
-                .setSmallIcon(R.drawable.ic_baseline_assignment_24)
-                .setLargeIcon(bitmap)
-                .setAutoCancel(true)
-                .setTicker("My Title")
-                .setNumber(i++)
-                .setContentIntent(
-                        PendingIntent.getActivity(this, 0, noteActivityIntent, PendingIntent.FLAG_MUTABLE))
-                .addAction(
-                        0,
-                        "View all notes",
-                        PendingIntent.getActivity(this, 0,
-                                new Intent(this, MainActivity.class), PendingIntent.FLAG_MUTABLE));
+        Intent intent = new Intent(this, NoteReminderReceiver.class);
+        intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_TITLE, noteTitle);
+        intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_TEXT, noteText);
+        intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_ID, noteId);
 
-        NotificationManagerCompat manager = NotificationManagerCompat.from(this);
-        manager.notify(1, builder.build());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        long currentTimeInMilliseconds = SystemClock.elapsedRealtime();
+        long ONE_HOUR = 60 * 60 * 1000;
+        long TEN_SECONDS = 10 * 1000;
+        long alarmTime = currentTimeInMilliseconds + TEN_SECONDS;
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME, alarmTime, pendingIntent);
+
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(System.currentTimeMillis());
+//        calendar.add(Calendar.SECOND, 0);
+//        calendar.add(Calendar.MINUTE, 50);
+//        calendar.add(Calendar.HOUR, 16);
+//
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000*60*60*24, pendingIntent);
+
+
+
     }
 
     @Override
